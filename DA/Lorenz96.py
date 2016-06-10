@@ -22,3 +22,14 @@ def RK4(f, dt):
 
 def Lorenz96_RK4(F, dt):
     return RK4(Lorenz96(F), dt)
+
+
+def teo(F, T, n_step):
+    dt = T / n_step
+    U = Lorenz96_RK4(F, dt)
+
+    def f(x):
+        for _ in range(n_step):
+            x = U(x)
+        return x
+    return f
