@@ -19,17 +19,6 @@ H : scipy.sparse.linalg.LinearOperator, (N) -> (p)
 
 import numpy as np
 from .linalg import symmetric_square_root
-from scipy.sparse.linalg import LinearOperator
-
-
-def H_trivial(N):
-    """ Observe all as it is. """
-    return LinearOperator((N, N), matvec=lambda x: x)
-
-
-def H_head(N, p):
-    """ Observe first p data """
-    return LinearOperator((p, N), matvec=lambda x: x[:p])
 
 
 def analysis(H, R_inv):
