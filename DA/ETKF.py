@@ -32,7 +32,7 @@ def make_ensemble(N, K, noise_intensity):
     >>> np.allclose(np.average(Xa, axis=1), np.zeros(10))
     True
     """
-    xs = np.random.normal(size=(K, N))
+    xs = noise_intensity*np.random.normal(size=(K, N))
     return (xs - np.average(xs, axis=0)).T
 
 
