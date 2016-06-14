@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Ensamble Trasnform Kalman Filter
+Ensemble Transform Kalman Filter
 
 Notations
 ----------
@@ -13,7 +13,7 @@ K : int
     Number of ensembles
 
 H : scipy.sparse.linalg.LinearOperator, (N) -> (p)
-    Obvservation operator. **Assume Linear**.
+    Observation operator. **Assume Linear**.
 
 """
 
