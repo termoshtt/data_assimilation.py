@@ -53,6 +53,6 @@ def analysis(H, RG, P, rho=1.0):
             Wa = symmetric_square_root((k-1)*Pa)
             sn = slice(p*n, (p+1)*n)
             xbG[sn] += np.dot(XbG[sn, :], wa)
-            XbG[sn] = np.dot(XbG[sn, :], Wa)
+            XbG[sn, :] = np.dot(XbG[sn, :], Wa)
         return xbG, XbG
     return update
