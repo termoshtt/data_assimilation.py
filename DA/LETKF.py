@@ -29,7 +29,7 @@ import numpy as np
 from .linalg import symmetric_square_root
 
 
-def analysis(H, RG, P):
+def analysis(H, RG, P, rho=1.0):
     def update(xbG, XbG, yOG):
         N, k = XbG.shape
         _, L = H.shape
@@ -48,11 +48,11 @@ def analysis(H, RG, P):
             Yb = YbG[sl, :]
             R = RG[sl, sl]
             YR = np.dot(Yb.T, np.linalg.inv(R))
-            Pa = np.linalg.inv(np.dot(YR, Yb) + (k-1)*np.identity(k))
+            Pa = np.linalg.inv(np.dot(YR, Yb) + ((k-1)/rho)*np.identity(k))
             wa = np.dot(Pa, np.dot(YR, yO - yb))
             Wa = symmetric_square_root((k-1)*Pa)
-            sp = slice(n*p, (n+1)*p)
-            xbG[sp] = np.dot(XbG[sp, :], wa)
-            XbG[sp] = np.dot(XbG[sp, :], Wa)
+            sn = slice(p*n, (p+1)*n)
+            xbG[sn] += np.dot(XbG[sn, :], wa)
+            XbG[sn] = np.dot(XbG[sn, :], Wa)
         return xbG, XbG
     return update
