@@ -29,30 +29,29 @@ import numpy as np
 from .linalg import symmetric_square_root
 
 
-def analysis(H, RG, P, rho=1.0):
+def observation(yG, YbG, RG, p):
+    def each(n):
+        y = np.roll(yG, p-n)[:2*p+1]
+        Yb = np.roll(YbG, p-n, axis=0)[:2*p+1, :]
+        R = np.roll(np.roll(RG, p-n, axis=1), p-n, axis=0)[:2*p+1, :2*p+1]
+        return y, Yb, R
+    return each
+
+
+def analysis(H, RG, p, rho=1.0):
     def update(xbG, XbG, yOG):
         N, k = XbG.shape
         _, L = H.shape
-        if N % P != 0:
-            raise RuntimeError("cites cannot be divided equally")
-        if L % P != 0:
-            raise RuntimeError("observations cannot be divided equally")
-        n = N // P
-        l = L // P
-        ybG = H(xbG)
         YbG = H(XbG)
-        for p in range(P):
-            sl = slice(p*l, (p+1)*l)
-            yb = ybG[sl]
-            yO = yOG[sl]
-            Yb = YbG[sl, :]
-            R = RG[sl, sl]
+        yG = yOG - H(xbG)
+        obs = observation(yG, YbG, RG, p)
+        for n in range(N):
+            y, Yb, R = obs(n)
             YR = np.dot(Yb.T, np.linalg.inv(R))
             Pa = np.linalg.inv(np.dot(YR, Yb) + ((k-1)/rho)*np.identity(k))
-            wa = np.dot(Pa, np.dot(YR, yO - yb))
+            wa = np.dot(Pa, np.dot(YR, y))
             Wa = symmetric_square_root((k-1)*Pa)
-            sn = slice(p*n, (p+1)*n)
-            xbG[sn] += np.dot(XbG[sn, :], wa)
-            XbG[sn, :] = np.dot(XbG[sn, :], Wa)
+            xbG[n] += np.dot(XbG[n, :], wa)
+            XbG[n, :] = np.dot(XbG[n, :], Wa)
         return xbG, XbG
     return update
