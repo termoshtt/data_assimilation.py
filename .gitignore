@@ -60,6 +60,7 @@ target/
 .python-version
 
 # ipython notebook
+*.ipynb
 .ipynb_checkpoints
 
 # generated figures
