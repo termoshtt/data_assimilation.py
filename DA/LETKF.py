@@ -7,16 +7,8 @@ Notations
 ----------
 N : int
     length of the global state vector
-n : int
-    length of local state vectors
-L : int
-    length of the global observation vector
-l : int
-    length of local observation vectors
-P : int
-    Number of cites. :code:`N=n*P`, :code:`L=l*P`
 p : int
-    index of cite
+    Number of observations used in a local analysis step is :code:`2*p+1`
 K : int
     Number of ensembles
 
@@ -41,7 +33,6 @@ def observation(yG, YbG, RG, p):
 def analysis(H, RG, p, rho=1.0):
     def update(xbG, XbG, yOG):
         N, k = XbG.shape
-        _, L = H.shape
         YbG = H(XbG)
         yG = yOG - H(xbG)
         obs = observation(yG, YbG, RG, p)
