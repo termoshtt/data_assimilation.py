@@ -2,7 +2,7 @@
 
 import numpy as np
 from . import LETKF, observation
-from .ETKF import make_ensemble
+from .ensemble import make_ensemble
 from unittest import TestCase
 
 
