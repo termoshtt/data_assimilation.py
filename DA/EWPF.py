@@ -52,3 +52,8 @@ def analysis(H, Q, R):
         cs -= np.average(cs)
         return xs, cs
     return update
+
+
+def weight(cs):
+    ws = np.exp(-cs)
+    return ws / np.sum(ws)
