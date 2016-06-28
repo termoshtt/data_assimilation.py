@@ -18,12 +18,29 @@ def make_ensemble(N, K, noise_intensity):
     return (xs - np.average(xs, axis=0)).T
 
 
-def forcast(teo):
-    def update(xa, Xa):
-        xs = np.array([xa + dxa for dxa in Xa.T])
+def forcast_ensemble(teo):
+    def update(xs):
         for i, x in enumerate(xs):
             xs[i] = teo(x)
-        xb = np.average(xs, axis=0)
-        Xb = np.array([x - xb for x in xs]).T
-        return xb, Xb
+        return xs
+    return update
+
+
+def deviations(xs):
+    xb = np.average(xs, axis=0)
+    Xb = np.array([x - xb for x in xs]).T
+    return xb, Xb
+
+
+def reconstruct(xb, Xb):
+    return np.array([xb + dxb for dxb in Xb.T])
+
+
+def forcast_deviations(teo):
+    U = forcast_ensemble(teo)
+
+    def update(xb, Xb):
+        xs = reconstruct(xb, Xb)
+        xs = U(xs)
+        return deviations(xs)
     return update

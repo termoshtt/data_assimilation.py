@@ -21,7 +21,9 @@ import numpy as np
 from .linalg import symmetric_square_root
 
 
-def analysis(H, R_inv):
+def analysis(H, R):
+    R_inv = np.linalg.inv(R)
+
     def update(xb, Xb, yO):
         _, k = Xb.shape
         yb = H(xb)

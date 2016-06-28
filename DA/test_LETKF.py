@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from . import LETKF, observation
+from . import LETKF, observation, misc
 from .ensemble import make_ensemble
 from unittest import TestCase
 
@@ -31,3 +31,16 @@ class TestLETKF(TestCase):
         Xb = make_ensemble(N, K, 1)
         A = LETKF.analysis(H, np.identity(L), p)
         xa, Xa = A(xb, Xb, H(xb))
+
+    def test_assimilation(self):
+        N = 40
+        p = 6
+        K = 8
+
+        H = observation.trivial(N)
+        obs = observation.add_noise(H, 1)
+        R = np.identity(N)
+
+        A = LETKF.analysis(H, R, p, rho=1.1)
+        rms = misc.evaluate_rms(N, 8, 0.01, A, obs, K, 1000)
+        self.assertLess(rms, 0.2)
