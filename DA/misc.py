@@ -5,25 +5,17 @@ from .model import RK4, Lorenz96
 from . import ensemble
 
 
-def Lorenz96_RK4(F, dt):
-    return RK4(Lorenz96(F), dt)
-
-
-def forcast(F, dt):
-    return ensemble.forcast_deviations(Lorenz96_RK4(F, dt))
-
-
 def make_init(N, F, dt, T):
-    teo = Lorenz96_RK4(F, dt)
+    U = RK4(Lorenz96(F), dt)
     x = np.sin(np.arange(0, np.pi, np.pi/N))
     for t in range(T):
-        x = teo(x)
+        x = U(x)
     return x
 
 
 def assimilation(F, dt, A, obs, K, T, init_noise=1):
-    U = Lorenz96_RK4(F, dt)
-    F = forcast(F, dt)
+    U = RK4(Lorenz96(F), dt)
+    F = ensemble.forcast_deviations(U)
 
     def da(x):
         xa = x.copy()
