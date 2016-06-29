@@ -25,7 +25,7 @@ def _dot3(A, B, C):
     return np.dot(A, np.dot(B, C))
 
 
-def analysis(H, Q, R):
+def analysis(H, Q, R, Nth):
     V_inv = _dot3(H, Q, H.T) + R
     K = _dot3(Q, H.T, V_inv)
     M_inv = inv(Q) + _dot3(H, inv(R), H.T)
@@ -37,7 +37,7 @@ def analysis(H, Q, R):
             r = yO - np.dot(H, x)
             Cmin = c + 0.5*_norm(r, V_inv)
             Cs.append(Cmin)
-        C = sorted(Cs)[-len(Cs) // 5]
+        C = sorted(Cs)[len(Cs) // 5]
         for i, (x, c) in enumerate(zip(xs, cs)):
             r = yO - np.dot(H, x)
             Cmin = c + 0.5*_norm(r, V_inv)
@@ -49,7 +49,14 @@ def analysis(H, Q, R):
                 a = 1
                 cs[i] = Cmin
             xs[i] += a*np.dot(K, r)
-        cs -= np.average(cs)
+        cs -= np.max(cs)
+        cs[cs < -30] = -30
+        ws = weight(cs)
+        if Neff(ws) < Nth:
+            cws = np.cumsum(ws)
+            xs = np.array([xs[np.searchsorted(cws, np.random.random())]
+                           for _ in range(len(xs))])
+            cs = np.zeros_like(cs)
         return xs, cs
     return update
 
@@ -57,3 +64,7 @@ def analysis(H, Q, R):
 def weight(cs):
     ws = np.exp(-cs)
     return ws / np.sum(ws)
+
+
+def Neff(ws):
+    return 1. / np.sum(ws**2)
