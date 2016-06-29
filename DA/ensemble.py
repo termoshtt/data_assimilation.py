@@ -44,3 +44,25 @@ def forcast_deviations(teo):
         xs = U(xs)
         return deviations(xs)
     return update
+
+
+def resampling(ws, xs):
+    cws = np.cumsum(ws)
+    return np.array([xs[np.searchsorted(cws, np.random.random())]
+                     for _ in range(len(xs))])
+
+
+def merge_resampling(ws, xs, n=3):
+    cws = np.cumsum(ws)
+    return np.array([np.average([xs[np.searchsorted(cws, np.random.random())]
+                                 for _ in range(n)], axis=0)
+                     for _ in range(len(xs))])
+
+
+def Neff(ws):
+    return 1. / np.sum(ws**2)
+
+
+def weight(cs):
+    ws = np.exp(-cs)
+    return ws / np.sum(ws)

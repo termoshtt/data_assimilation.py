@@ -3,6 +3,13 @@
 import numpy as np
 
 
+def norm(r, A):
+    """
+    :math:`\| r \|_A = (r, Ar)`
+    """
+    return np.dot(r, np.dot(A, r))
+
+
 def symmetric_square_root(A):
     """
     calc symmetric square root matrix of
