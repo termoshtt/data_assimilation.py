@@ -42,12 +42,11 @@ def analysis(H, Q, R, Nth):
                 a = 1
                 cs[i] = Cmin
             xs[i] += a*np.dot(K, r)
-        cs -= np.max(cs)
-        cs[cs < -30] = -30
+        cs -= np.min(cs)
+        cs[cs > 30] = 30
         ws = ensemble.weight(cs)
-        print(ensemble.Neff(ws))
         if ensemble.Neff(ws) < Nth:
-            xs = ensemble.merge_resampling(ws, xs, n=10)
+            xs = ensemble.merge_resampling(ws, xs)
             cs = np.zeros_like(cs)
         return xs, cs
     return update
