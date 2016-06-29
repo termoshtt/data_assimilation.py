@@ -10,6 +10,10 @@ def norm(r, A):
     return np.dot(r, np.dot(A, r))
 
 
+def dot3(A, B, C):
+    return np.dot(A, np.dot(B, C))
+
+
 def symmetric_square_root(A):
     """
     calc symmetric square root matrix of
