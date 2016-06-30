@@ -18,7 +18,25 @@ from numpy.linalg import inv
 from . import linalg, ensemble
 
 
-def analysis(H, Q, R, Nth):
+def analysis(H, Q, R, M, Nth, n=3):
+    """
+    Analysis step of Equivalent-weight Particle Filter
+
+    Parameters
+    -----------
+    H : np.array (Nxp matrix)
+        Observation
+    Q : np.array (NxN matrix)
+        Covariant matrix of EoM
+    R : np.array (pxp matrix)
+        Covariant matrix of observation
+    M : int
+        parameter for equivalent weight
+    Nth : int
+        Threshold of resampling
+    n : int, optional(default=3)
+        Parameter for :py:func:`ensemble.merge_resampling`
+    """
     V_inv = linalg.dot3(H, Q, H.T) + R
     K = linalg.dot3(Q, H.T, V_inv)
     M_inv = inv(Q) + linalg.dot3(H.T, inv(R), H)
@@ -30,7 +48,7 @@ def analysis(H, Q, R, Nth):
             r = yO - np.dot(H, x)
             Cmin = c + 0.5*linalg.norm(r, V_inv)
             Cs.append(Cmin)
-        C = sorted(Cs)[len(Cs) // 5]
+        C = sorted(Cs)[M]
         for i, (x, c) in enumerate(zip(xs, cs)):
             r = yO - np.dot(H, x)
             Cmin = c + 0.5*linalg.norm(r, V_inv)
@@ -43,10 +61,10 @@ def analysis(H, Q, R, Nth):
                 cs[i] = Cmin
             xs[i] += a*np.dot(K, r)
         cs -= np.min(cs)
-        cs[cs > 30] = 30
+        cs[cs > 30] = 30  # avoid overflow
         ws = ensemble.weight(cs)
         if ensemble.Neff(ws) < Nth:
-            xs = ensemble.merge_resampling(ws, xs)
+            xs = ensemble.merge_resampling(ws, xs, n)
             cs = np.zeros_like(cs)
         return xs, cs
     return update
