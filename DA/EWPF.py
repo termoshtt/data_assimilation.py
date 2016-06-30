@@ -21,8 +21,8 @@ from . import linalg, ensemble
 def analysis(H, Q, R, Nth):
     V_inv = linalg.dot3(H, Q, H.T) + R
     K = linalg.dot3(Q, H.T, V_inv)
-    M_inv = inv(Q) + linalg.dot3(H, inv(R), H.T)
-    KMK = linalg.dot3(K, M_inv, K.T)
+    M_inv = inv(Q) + linalg.dot3(H.T, inv(R), H)
+    KMK = linalg.dot3(K.T, M_inv, K)
 
     def update(xs, cs, yO):
         Cs = []
