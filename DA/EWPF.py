@@ -15,10 +15,11 @@ K : int
 
 import numpy as np
 from numpy.linalg import inv
+from numpy.random import normal
 from . import linalg, ensemble
 
 
-def analysis(H, Q, R, M, Nth, n=3):
+def analysis(H, Q, R, M, Nth, gm=0, n=3):
     """
     Analysis step of Equivalent-weight Particle Filter
 
@@ -32,6 +33,8 @@ def analysis(H, Q, R, M, Nth, n=3):
         Covariant matrix of observation
     M : int
         parameter for equivalent weight
+    gm : float
+        Intensity of noise added in the development of the proposed density
     Nth : int
         Threshold of resampling
     n : int, optional(default=3)
@@ -41,6 +44,7 @@ def analysis(H, Q, R, M, Nth, n=3):
     K = linalg.dot3(Q, H.T, V_inv)
     M_inv = inv(Q) + linalg.dot3(H.T, inv(R), H)
     KMK = linalg.dot3(K.T, M_inv, K)
+    Qs = linalg.symmetric_square_root(Q)
 
     def update(xs, cs, yO):
         Cs = []
@@ -59,7 +63,7 @@ def analysis(H, Q, R, M, Nth, n=3):
             else:
                 a = 1
                 cs[i] = Cmin
-            xs[i] += a*np.dot(K, r)
+            xs[i] += a*np.dot(K, r) + gm * np.dot(Qs, normal(size=x.shape))
         cs -= np.min(cs)
         cs[cs > 30] = 30  # avoid overflow
         ws = ensemble.weight(cs)
