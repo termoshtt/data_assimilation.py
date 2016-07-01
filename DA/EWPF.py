@@ -63,7 +63,9 @@ def analysis(H, Q, R, M, Nth, gm=0, n=3):
             else:
                 a = 1
                 cs[i] = Cmin
-            xs[i] += a*np.dot(K, r) + gm * np.dot(Qs, normal(size=x.shape))
+            xi = normal(size=x.shape)
+            cs[i] += np.linalg.norm(xi) / 2
+            xs[i] += a*np.dot(K, r) + gm * np.dot(Qs, xi)
         cs -= np.min(cs)
         cs[cs > 30] = 30  # avoid overflow
         ws = ensemble.weight(cs)
