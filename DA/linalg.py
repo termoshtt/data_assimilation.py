@@ -3,7 +3,7 @@
 import numpy as np
 
 
-def norm(r, A):
+def quad(r, A):
     """
     :math:`\| r \|_A = (r, Ar)`
     """
