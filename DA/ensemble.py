@@ -47,6 +47,7 @@ def forcast_deviations(teo):
 
 
 def sampling(cws, xs):
+    """ Get sample from `xs` by with accumulated weight `cws` """
     return xs[np.searchsorted(cws, np.random.random())]
 
 
@@ -57,6 +58,8 @@ def resampling(ws, xs):
 
 def _gen_weight(n):
     """
+    Generate weight for merge-resampling
+
     Examples
     ---------
     >>> a = _gen_weight(5)
@@ -64,6 +67,7 @@ def _gen_weight(n):
     True
     >>> np.allclose(np.sum(a**2), 1.0)
     True
+
     """
     a = np.random.random(n)
     M1 = np.sum(a[1:])
@@ -82,6 +86,7 @@ def merge_resampling(ws, xs, n=3):
 
 
 def Neff(ws):
+    """ effective number of ensembles """
     return 1. / np.sum(ws**2)
 
 

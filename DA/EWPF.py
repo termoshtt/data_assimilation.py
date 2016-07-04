@@ -26,9 +26,9 @@ def analysis(H, Q, R, M, Nth, gm=0, n=3):
     Parameters
     -----------
     H : np.array (Nxp matrix)
-        Observation
+        Linear observation
     Q : np.array (NxN matrix)
-        Covariant matrix of EoM
+        Covariant matrix of EoM (model noise)
     R : np.array (pxp matrix)
         Covariant matrix of observation
     M : int
@@ -36,7 +36,7 @@ def analysis(H, Q, R, M, Nth, gm=0, n=3):
     gm : float
         Intensity of noise added in the development of the proposed density
     Nth : int
-        Threshold of resampling
+        Threshold of resampling (use :py:func:`ensemble.Neff`)
     n : int, optional(default=3)
         Parameter for :py:func:`ensemble.merge_resampling`
     """
