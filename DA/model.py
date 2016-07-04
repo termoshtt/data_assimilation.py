@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
-
 import numpy as np
-from . import ensemble
 
 
 def Lorenz96(F):
@@ -17,11 +15,19 @@ def Lorenz63(p, r, b):
     return f
 
 
-def RK4(f, dt):
+def RK4(f, dt, T=1):
     def teo(x):
         k1 = dt*f(x)
         k2 = dt*f(x+k1/2)
         k3 = dt*f(x+k2/2)
         k4 = dt*f(x+k3)
         return x + (k1+2*k2+2*k3+k4)/6
-    return teo
+
+    if T == 1:
+        return teo
+
+    def repeat(x):
+        for t in range(T):
+            x = teo(x)
+        return x
+    return repeat

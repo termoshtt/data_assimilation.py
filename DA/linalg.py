@@ -3,6 +3,17 @@
 import numpy as np
 
 
+def quad(r, A):
+    """
+    :math:`\| r \|_A = (r, Ar)`
+    """
+    return np.dot(r, np.dot(A, r))
+
+
+def dot3(A, B, C):
+    return np.dot(A, np.dot(B, C))
+
+
 def symmetric_square_root(A):
     """
     calc symmetric square root matrix of
