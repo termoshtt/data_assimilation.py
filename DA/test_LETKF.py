@@ -32,15 +32,16 @@ class TestLETKF(TestCase):
         A = LETKF.analysis(H, np.identity(L), p)
         xa, Xa = A(xb, Xb, H(xb))
 
+
+class TestLETKF2(misc.TestLorenz96):
+
+    def setUp(self):
+        super().setUp(F=8, dt=0.01, N=40, T=1000, K=8)
+
     def test_assimilation(self):
-        N = 40
-        p = 6
-        K = 8
-
-        H = observation.trivial(N)
+        H = observation.trivial(self.N)
         obs = observation.add_noise(H, 1)
-        R = np.identity(N)
-
-        A = LETKF.analysis(H, R, p, rho=1.1)
-        rms = misc.evaluate_rms(N, 8, 0.01, A, obs, K, 1000)
+        R = np.identity(self.N)
+        A = LETKF.analysis(H, R, p=6, rho=1.1)
+        rms = self.eval_rms(A, obs)
         self.assertLess(rms, 0.2)
