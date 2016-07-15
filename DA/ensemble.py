@@ -48,7 +48,7 @@ def forcast_deviations(teo):
 
 def sampling(cws, xs):
     """ Get sample from `xs` by with accumulated weight `cws` """
-    return xs[np.searchsorted(cws, np.random.random())]
+    return xs[np.searchsorted(cws, cws[-1]*np.random.random())]
 
 
 def resampling(ws, xs):
