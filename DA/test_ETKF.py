@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from . import ETKF, observation, misc
+from . import ETKF, observation, misc, ensemble
 from unittest import TestCase
 
 
@@ -13,16 +13,21 @@ class TestETKF(TestCase):
         K = 10
         H = observation.head(N, p)
         xb = np.random.normal(size=N)
-        Xb = np.array([xb + np.random.normal(size=N) for _ in range(K)]).T
+        Xb = ensemble.make_ensemble(N, K, 1.0)
+        xs = ensemble.reconstruct(xb, Xb)
         A = ETKF.analysis(H, np.identity(p))
-        xa, Xa = A(xb, Xb, H(xb))
+        xs = A(xs, H(xb))
+
+
+class TestETKF2(misc.TestLorenz96):
+
+    def setUp(self):
+        super().setUp(F=8, dt=0.01, N=40, T=1000, K=40)
 
     def test_assimilation(self):
-        N = 40
-        K = 40
-        H = observation.trivial(N)
-        obs = observation.add_noise(H, 1)
-        R = np.identity(N)
+        H = observation.trivial(self.N)
+        R = np.identity(self.N)
         A = ETKF.analysis(H, R)
-        rms = misc.evaluate_rms(N, 8, 0.01, A, obs, K, 1000)
+        obs = observation.add_noise(H, 1)
+        rms = self.eval_rms(A, obs)
         self.assertLess(rms, 0.2)
