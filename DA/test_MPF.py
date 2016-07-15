@@ -9,6 +9,12 @@ class TestMPF(misc.TestLorenz63):
     def setUp(self):
         super().setUp(p=10, r=28, b=8./3., dt=0.01, T0=10, T=100, K=500)
 
+    def test_small_n(self):
+        H = np.identity(3)
+        R = np.identity(3)
+        with self.assertRaises(RuntimeError):
+            MPF.analysis(H, R, n=1)
+
     def test_assimilation(self):
         H = np.identity(3)
         R = np.identity(3)

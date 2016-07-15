@@ -79,6 +79,8 @@ def _gen_weight(n):
 
 
 def merge_resampling(ws, xs, n=3):
+    if n < 2:
+        raise RuntimeError("Too small n for merge resampling: n={}".format(n))
     cws = np.cumsum(ws)
     a = _gen_weight(n)
     return np.array([np.dot(a, [sampling(cws, xs) for _ in range(n)])

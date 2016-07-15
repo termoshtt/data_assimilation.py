@@ -6,6 +6,8 @@ from . import ensemble, linalg
 
 
 def analysis(H, R, n=3):
+    if n < 2:
+        raise RuntimeError("Too small n for merge resampling: n={}".format(n))
     R_inv = inv(R)
 
     def update(xs, yO):
