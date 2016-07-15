@@ -2,7 +2,7 @@
 
 import numpy as np
 from . import LETKF, observation, misc
-from .ensemble import make_ensemble
+from .ensemble import make_ensemble, reconstruct
 from unittest import TestCase
 
 
@@ -29,8 +29,9 @@ class TestLETKF(TestCase):
         H = observation.head(N, L)
         xb = np.random.normal(size=N)
         Xb = make_ensemble(N, K, 1)
+        xs = reconstruct(xb, Xb)
         A = LETKF.analysis(H, np.identity(L), p)
-        xa, Xa = A(xb, Xb, H(xb))
+        xs = A(xs, H(xb))
 
 
 class TestLETKF2(misc.TestLorenz96):

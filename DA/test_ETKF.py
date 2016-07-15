@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from . import ETKF, observation, misc
+from . import ETKF, observation, misc, ensemble
 from unittest import TestCase
 
 
@@ -13,9 +13,10 @@ class TestETKF(TestCase):
         K = 10
         H = observation.head(N, p)
         xb = np.random.normal(size=N)
-        Xb = np.array([xb + np.random.normal(size=N) for _ in range(K)]).T
+        Xb = ensemble.make_ensemble(N, K, 1.0)
+        xs = ensemble.reconstruct(xb, Xb)
         A = ETKF.analysis(H, np.identity(p))
-        xa, Xa = A(xb, Xb, H(xb))
+        xs = A(xs, H(xb))
 
 
 class TestETKF2(misc.TestLorenz96):
