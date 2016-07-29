@@ -1,4 +1,4 @@
 nosetests:3.5:
   image: termoshtt/scipy:3.5
   script:
-    - nosetests --with-doctest -v
+    - nosetests --with-doctest -v --with-coverage --cover-package=DA
