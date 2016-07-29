@@ -62,14 +62,23 @@ def forcast(teo):
     return update
 
 
-def sampling(cws, xs):
+def _sampling(cws, xs):
     """ Get sample from `xs` by with accumulated weight `cws` """
     return xs[np.searchsorted(cws, cws[-1]*np.random.random())]
 
 
-def resampling(ws, xs):
+def importance_sampling(ws, xs):
+    """ execute importance sampling
+
+    Parameters
+    -----------
+    ws : ndarray (1d)
+        weights of particles
+    xs : ndarray (2d)
+        particles
+    """
     cws = np.cumsum(ws)
-    return np.array([sampling(cws, xs) for _ in range(len(xs))])
+    return np.array([_sampling(cws, xs) for _ in range(len(xs))])
 
 
 def _gen_weight(n):
@@ -95,11 +104,20 @@ def _gen_weight(n):
 
 
 def merge_resampling(ws, xs, n=3):
+    """ execute merge resampling
+
+    Parameters
+    -----------
+    ws : ndarray (1d)
+        weights of particles
+    xs : ndarray (2d)
+        particles
+    """
     if n < 2:
         raise RuntimeError("Too small n for merge resampling: n={}".format(n))
     cws = np.cumsum(ws)
     a = _gen_weight(n)
-    return np.array([np.dot(a, [sampling(cws, xs) for _ in range(n)])
+    return np.array([np.dot(a, [_sampling(cws, xs) for _ in range(n)])
                      for _ in range(len(xs))])
 
 
