@@ -1,4 +1,5 @@
 nosetests:3.5:
   image: termoshtt/scipy:3.5
   script:
+    - pip install -r requirements.txt
     - nosetests --with-doctest -v --with-coverage --cover-package=DA
