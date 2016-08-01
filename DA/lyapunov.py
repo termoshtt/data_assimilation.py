@@ -22,11 +22,11 @@ def Jacobi(F, x, alpha=1e-7):
     return D
 
 
-def scale(C):
-    norms = np.array([np.linalg.norm(c) for c in C])
-    for c, n in zip(C, norms):
+def scaled(C):
+    norms = np.array([np.linalg.norm(c) for c in C.T])
+    for c, n in zip(C.T, norms):
         c /= n
-    return n
+    return C, norms
 
 
 def _clv_forward(U, x, T):
@@ -46,20 +46,16 @@ def _clv_forward(U, x, T):
     return tl
 
 
-def _clv_backward(tl, T, T_pre, T_post):
+def _clv_backward(tl):
     N = len(tl[0]["x"])
-    C = np.random.random((N, N))
-    D = np.zeros(N)
-    count = 0
-    for t, info in reversed(enumerate(tl)):
+    C = np.identity(N)
+    for info in reversed(tl):
         R = info["R"]
         Q = info["Q"]
-        C = solve_triangular(R, C)
         info["V"] = np.dot(Q, C)
-        if T_pre < t and t < T - T_post:
-            D += np.log(scale(C))
-            count += 1
-    return tl, np.exp(D/count)
+        C, n = scaled(solve_triangular(R, C))
+        info["D"] = n
+    return tl
 
 
 def CLV(U, x0, T, T_pre=None, T_post=None):
@@ -67,5 +63,5 @@ def CLV(U, x0, T, T_pre=None, T_post=None):
         T_pre = T // 2
     if T_post is None:
         T_post = T // 2
-    tl = _clv_forward(U, x0.copy(), T_pre + T + T_post)
-    return _clv_backward(tl, T, T_pre, T_post)
+    tl = _clv_forward(U, x0.copy(), T_pre+T+T_post)
+    return _clv_backward(tl)
