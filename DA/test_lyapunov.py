@@ -46,7 +46,7 @@ class TestLyapunov(TestCase):
             J = lyapunov.Jacobi(self.U, x)
             assert_allclose(J(Q), np.dot(Qn, Rn), atol=1e-7)
 
-    def test_clv_backward_QR(self):
+    def test_clv_backward(self):
         T = 1000
         tl = lyapunov._clv_forward(self.U, self.x, T)
         tl = lyapunov._clv_backward(tl)
@@ -68,3 +68,8 @@ class TestLyapunov(TestCase):
             assert_allclose(lyapunov.rescaled(np.dot(Rn, C), Dn),
                             Cn, atol=1e-8)
             assert_allclose(lyapunov.rescaled(J(V), Dn), Vn, atol=1e-6)
+
+    def test_clv(self):
+        T = 123
+        tl = lyapunov.CLV(self.U, self.x, T)
+        assert_equal(len(tl), T)

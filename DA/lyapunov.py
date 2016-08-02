@@ -89,4 +89,4 @@ def CLV(U, x0, T, T_pre=None, T_post=None):
     if T_post is None:
         T_post = T // 2
     tl = _clv_forward(U, x0.copy(), T_pre+T+T_post)
-    return _clv_backward(tl)
+    return _clv_backward(tl)[T_pre:T+T_pre]
