@@ -16,7 +16,7 @@ def Jacobi(F, x, alpha=1e-7):
         if len(V.shape) == 1:
             return f(V)
         if len(V.shape) == 2:
-            return np.array([f(v) for v in V.T])
+            return np.array([f(v) for v in V.T]).T
         raise RuntimeError("Higher order (>=3) tensor does not support")
 
     return D
