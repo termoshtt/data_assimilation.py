@@ -70,6 +70,8 @@ class TestLyapunov(TestCase):
             assert_allclose(lyapunov.rescaled(J(V), Dn), Vn, atol=1e-6)
 
     def test_clv(self):
-        T = 123
-        tl = lyapunov.CLV(self.U, self.x, T)
+        T = 10000
+        tl = lyapunov.CLV(self.U, self.x, T, T_pre=1000, T_post=1000)
         assert_equal(len(tl), T)
+        e = -100*sum(np.log(info["D"]) for info in tl) / len(tl)
+        assert_allclose(e, np.array([0.9, 0, -14]), rtol=1e-1, atol=1e-1)
