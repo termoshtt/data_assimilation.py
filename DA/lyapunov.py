@@ -23,10 +23,35 @@ def Jacobi(F, x, alpha=1e-7):
 
 
 def scaled(C):
+    """ scale rows
+
+    Example
+    --------
+    >>> A = np.random.random((5, 5))
+    >>> A, _ = scaled(A)
+    >>> for a in A.T:
+    ...     np.testing.assert_almost_equal(np.linalg.norm(a), 1.0)
+
+    """
     norms = np.array([np.linalg.norm(c) for c in C.T])
     for c, n in zip(C.T, norms):
         c /= n
     return C, norms
+
+
+def rescaled(C, norms):
+    """ Inverse of :py:func:`scaled`
+
+    Example
+    --------
+    >>> A = np.random.random((5, 5))
+    >>> C, n = scaled(A.copy())
+    >>> B = rescaled(C, n)
+    >>> np.testing.assert_almost_equal(A, B)
+    """
+    for c, n in zip(C.T, norms):
+        c *= n
+    return C
 
 
 def _clv_forward(U, x, T):
