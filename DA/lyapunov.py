@@ -84,6 +84,17 @@ def _clv_backward(tl):
 
 
 def CLV(U, x0, T, T_pre=None, T_post=None):
+    """ Covariant Lyapunov Vector
+
+    Parameters
+    -----------
+    U : np.array(1d) -> np.array(1d)
+        Time evolution operator
+    x0 : np.array(1d)
+        Initial point
+    T : Int
+        length of timeline
+    """
     if T_pre is None:
         T_pre = T // 2
     if T_post is None:
