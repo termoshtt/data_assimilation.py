@@ -1,10 +1,24 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from . import EKF, observation, misc, ensemble
+from unittest import TestCase
+
+from . import EKF
+from .linalg import dot3
 
 
-class TestEKF(misc.TestLorenz96):
+class TestEKF(TestCase):
+
+    def test_forcast(self):
+        N = 10
+        A = np.random.random((N, N))
+        U = lambda x: np.dot(A, x)  # linear dynamics
+        F = EKF.forcast(U)
+        P = np.random.random((N, N))
+        P = np.dot(P.T, P)
+        x = np.random.random(N)
+        _, Pn = F(x, P)
+        np.testing.assert_allclose(Pn, dot3(A, P, A.T))
 
     def assimilation(self, A, obs):
         x = self.init.copy()
