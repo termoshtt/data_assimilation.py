@@ -34,6 +34,7 @@ def observation(yG, YbG, RG, p):
 def analysis(H, RG, p, rho=1.0):
     def update(xs, yOG):
         xbG, XbG = ensemble.deviations(xs)
+        XbG = XbG.T
         N, k = XbG.shape
         YbG = H(XbG)
         yG = yOG - H(xbG)
@@ -46,5 +47,5 @@ def analysis(H, RG, p, rho=1.0):
             Wa = symmetric_square_root((k-1)*Pa)
             xbG[n] += np.dot(XbG[n, :], wa)
             XbG[n, :] = np.dot(XbG[n, :], Wa)
-        return ensemble.reconstruct(xbG, XbG)
+        return ensemble.reconstruct(xbG, XbG.T)
     return update

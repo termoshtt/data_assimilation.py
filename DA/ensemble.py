@@ -3,7 +3,7 @@
 import numpy as np
 
 
-def new(N, K, center=None, noise=1.0):
+def new(N, K):
     """ Create ensemble with zero mean
 
     Examples
@@ -13,23 +13,16 @@ def new(N, K, center=None, noise=1.0):
     (5, 10)
     >>> np.allclose(average(xs), np.zeros(10))
     True
-
-    >>> x = np.random.random(10)
-    >>> xs = new(10, 5, center=x)
-    >>> xs.shape
-    (5, 10)
     >>> xs[0].shape
     (10,)
-    >>> np.allclose(average(xs), x)
-    True
     """
     xs = np.random.normal(size=(K, N))
     xm = np.average(xs, axis=0)
-    if center is None:
-        return noise*(xs - xm)
-    if len(center) != N:
-        raise RuntimeError("Size of center mismatches")
-    return center + noise*(xs - xm)
+    return xs - xm
+
+
+def replica(x, K, noise=1.0):
+    return x + noise*new(len(x), K)
 
 
 def average(xs):

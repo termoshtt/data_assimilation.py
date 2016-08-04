@@ -27,6 +27,7 @@ def analysis(H, R):
 
     def update(xs, yO):
         xb, Xb = ensemble.deviations(xs)
+        Xb = Xb.T
         _, k = Xb.shape
         yb = H(xb)
         Yb = H(Xb)
@@ -34,5 +35,5 @@ def analysis(H, R):
         Pa = np.linalg.inv(np.dot(YR, Yb) + (k-1)*np.identity(k))
         wa = np.dot(Pa, np.dot(YR, yO - yb))
         Wa = symmetric_square_root((k-1)*Pa)
-        return ensemble.reconstruct(xb + np.dot(Xb, wa), np.dot(Xb, Wa))
+        return ensemble.reconstruct(xb + np.dot(Xb, wa), np.dot(Xb, Wa).T)
     return update

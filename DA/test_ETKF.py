@@ -13,8 +13,7 @@ class TestETKF(TestCase):
         K = 10
         H = observation.head(N, p)
         xb = np.random.normal(size=N)
-        Xb = ensemble.make_ensemble(N, K, 1.0)
-        xs = ensemble.reconstruct(xb, Xb)
+        xs = ensemble.replica(xb, K, noise=1.0)
         A = ETKF.analysis(H, np.identity(p))
         xs = A(xs, H(xb))
 
