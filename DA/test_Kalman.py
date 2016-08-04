@@ -18,18 +18,19 @@ class TestKalman(TestCase):
         self.R = np.dot(R, R.T)
         self.H = np.eye(self.p, self.N)
 
-    def test_identity(self):
-        x = normal(size=self.N)
-        xm = normal(size=self.N)
-        y = normal(size=self.p)
+    def test_analysis(self):
+        x = normal(size=self.N)   # truth
+        xm = normal(size=self.N)  # pre-estimate
+        y = normal(size=self.p)   # observation
 
         Q_inv = inv(self.Q)
         R_inv = inv(self.R)
         M_inv = Kalman.M_inv(self.H, self.Q, self.R)
         V_inv = Kalman.V_inv(self.H, self.Q, self.R)
-        K = Kalman.gain_matrix(self.H, self.Q, V_inv)
 
-        a = xm + np.dot(K, y-np.dot(self.H, xm))
+        a, Qn = Kalman.analysis(self.H, self.Q.copy(), self.R, xm, y)
+
+        np.testing.assert_allclose(inv(Qn), M_inv)
 
         np.testing.assert_almost_equal(
             linalg.quad(x-xm, Q_inv) + linalg.quad(y-np.dot(self.H, x), R_inv),
