@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from . import LETKF, observation, misc
-from .ensemble import make_ensemble, reconstruct
+from . import LETKF, observation, misc, ensemble
 from unittest import TestCase
 
 
@@ -13,7 +12,7 @@ class TestLETKF(TestCase):
         K = 5
         p = 1
         yG = np.arange(N)
-        YbG = make_ensemble(N, K, 1)
+        YbG = (ensemble.replica(yG, K, 1) - yG).T
         RG = np.diag(1+yG)
         f = LETKF.observation(yG, YbG, RG, p)
         y, Yb, R = f(5)
@@ -28,8 +27,7 @@ class TestLETKF(TestCase):
         K = 5
         H = observation.head(N, L)
         xb = np.random.normal(size=N)
-        Xb = make_ensemble(N, K, 1)
-        xs = reconstruct(xb, Xb)
+        xs = ensemble.replica(xb, K, 1)
         A = LETKF.analysis(H, np.identity(L), p)
         xs = A(xs, H(xb))
 

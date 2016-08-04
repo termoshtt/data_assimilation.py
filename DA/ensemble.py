@@ -3,46 +3,62 @@
 import numpy as np
 
 
-def make_ensemble(N, K, noise_intensity):
+def new(N, K):
     """ Create ensemble with zero mean
 
     Examples
     ---------
-    >>> Xa = make_ensemble(10, 5, 1)
-    >>> Xa.shape
-    (10, 5)
-    >>> np.allclose(np.average(Xa, axis=1), np.zeros(10))
+    >>> xs = new(10, 5)
+    >>> xs.shape
+    (5, 10)
+    >>> np.allclose(average(xs), np.zeros(10))
+    True
+    >>> xs[0].shape
+    (10,)
+    """
+    xs = np.random.normal(size=(K, N))
+    xm = np.average(xs, axis=0)
+    return xs - xm
+
+
+def replica(x, K, noise=1.0):
+    return x + noise*new(len(x), K)
+
+
+def average(xs):
+    return np.average(xs, axis=0)
+
+
+def deviations(xs):
+    """ Get deviation vectors
+
+    Examples
+    ---------
+    >>> xs = new(10, 5)
+    >>> x, X = deviations(xs)
+    >>> x.shape
+    (10,)
+    >>> np.allclose(x, np.zeros(10))
+    True
+    >>> X.shape
+    (5, 10)
+    >>> xs2 = reconstruct(x, X)
+    >>> np.allclose(xs, xs2)
     True
     """
-    xs = noise_intensity*np.random.normal(size=(K, N))
-    return (xs - np.average(xs, axis=0)).T
+    xb = average(xs)
+    return xb, xs - xb
 
 
-def forcast_ensemble(teo):
+def reconstruct(xb, Xb):
+    return xb + Xb
+
+
+def forcast(teo):
     def update(xs):
         for i, x in enumerate(xs):
             xs[i] = teo(x)
         return xs
-    return update
-
-
-def deviations(xs):
-    xb = np.average(xs, axis=0)
-    Xb = np.array([x - xb for x in xs]).T
-    return xb, Xb
-
-
-def reconstruct(xb, Xb):
-    return np.array([xb + dxb for dxb in Xb.T])
-
-
-def forcast_deviations(teo):
-    U = forcast_ensemble(teo)
-
-    def update(xb, Xb):
-        xs = reconstruct(xb, Xb)
-        xs = U(xs)
-        return deviations(xs)
     return update
 
 

@@ -6,7 +6,7 @@ from . import ensemble
 from unittest import TestCase
 
 
-class _TestDA(TestCase):
+class _TestEnsembleDA(TestCase):
 
     def setUp(self, U, N, T, K, init_noise=1):
         self.N = N
@@ -15,7 +15,7 @@ class _TestDA(TestCase):
         self.init_noise = init_noise
 
         self.U = U
-        self.F = ensemble.forcast_ensemble(self.U)
+        self.F = ensemble.forcast(self.U)
 
         x = np.sin(np.arange(0, np.pi, np.pi/N))
         for t in range(T):
@@ -25,8 +25,7 @@ class _TestDA(TestCase):
     def assimilation(self, A, obs):
         x = self.init.copy()
         xa = self.init.copy()
-        Xa = ensemble.make_ensemble(len(xa), self.K, self.init_noise)
-        xs = ensemble.reconstruct(xa, Xa)
+        xs = ensemble.replica(xa, self.K, noise=self.init_noise)
         for t in range(self.T + self.T // 10):
             x = self.U(x)
             xs = self.F(xs)
@@ -45,13 +44,13 @@ class _TestDA(TestCase):
         return rms_sum / self.T
 
 
-class TestLorenz96(_TestDA):
+class TestLorenz96(_TestEnsembleDA):
 
     def setUp(self, F, dt, N, T, K, init_noise=1):
         super().setUp(RK4(Lorenz96(F), dt), N, T, K, init_noise)
 
 
-class TestLorenz63(_TestDA):
+class TestLorenz63(_TestEnsembleDA):
 
     def setUp(self, p, r, b, dt, T0, T, K, init_noise=1):
         super().setUp(RK4(Lorenz63(p, r, b), dt, T0), 3, T, K, init_noise)
