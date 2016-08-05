@@ -29,6 +29,13 @@ def average(xs):
     return np.average(xs, axis=0)
 
 
+def covar(xs):
+    K, _ = xs.shape
+    xm = average(xs)
+    dxs = xs - xm
+    return np.dot(dxs.T, dxs) / (K-1)
+
+
 def deviations(xs):
     """ Get deviation vectors
 
