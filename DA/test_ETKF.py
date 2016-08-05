@@ -15,7 +15,7 @@ class TestETKF(TestCase):
         xb = np.random.normal(size=N)
         xs = ensemble.replica(xb, K, noise=1.0)
         A = ETKF.analysis(H, np.identity(p))
-        xs = A(xs, H(xb))
+        xs = A(xs, np.dot(H, xb))
 
 
 class TestETKF2(misc.TestLorenz96):
@@ -24,7 +24,7 @@ class TestETKF2(misc.TestLorenz96):
         super().setUp(F=8, dt=0.01, N=40, T=1000, K=40)
 
     def test_assimilation(self):
-        H = observation.trivial(self.N)
+        H = np.identity(self.N)
         R = np.identity(self.N)
         A = ETKF.analysis(H, R)
         obs = observation.add_noise(H, 1)

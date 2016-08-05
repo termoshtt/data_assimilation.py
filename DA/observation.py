@@ -1,19 +1,18 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from scipy.sparse.linalg import LinearOperator
 
 
 def trivial(N):
     """ Observe all as it is. """
-    return LinearOperator((N, N), matvec=lambda x: x)
+    return np.identity(N)
 
 
 def head(N, p):
     """ Observe first p data """
-    return LinearOperator((p, N), matvec=lambda x: x[:p])
+    return np.eye(N, p).T
 
 
 def add_noise(H, intensity):
     _, N = H.shape
-    return lambda x: H(x) + intensity*np.random.normal(size=N)
+    return lambda x: np.dot(H, x) + intensity*np.random.normal(size=N)
