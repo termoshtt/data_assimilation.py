@@ -29,7 +29,7 @@ class TestLETKF(TestCase):
         xb = np.random.normal(size=N)
         xs = ensemble.replica(xb, K, 1)
         A = LETKF.analysis(H, np.identity(L), p)
-        xs = A(xs, H(xb))
+        xs = A(xs, np.dot(H, xb))
 
 
 class TestLETKF2(misc.TestLorenz96):

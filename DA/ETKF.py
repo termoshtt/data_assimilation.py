@@ -11,10 +11,6 @@ p : int
     length of observation vector
 K : int
     Number of ensembles
-
-H : scipy.sparse.linalg.LinearOperator, (N) -> (p)
-    Observation operator. **Assume Linear**.
-
 """
 
 import numpy as np
@@ -29,8 +25,8 @@ def analysis(H, R):
         xb, Xb = ensemble.deviations(xs)
         Xb = Xb.T
         _, k = Xb.shape
-        yb = H(xb)
-        Yb = H(Xb)
+        yb = np.dot(H, xb)
+        Yb = np.dot(H, Xb)
         YR = np.dot(Yb.T, R_inv)
         Pa = np.linalg.inv(np.dot(YR, Yb) + (k-1)*np.identity(k))
         wa = np.dot(Pa, np.dot(YR, yO - yb))

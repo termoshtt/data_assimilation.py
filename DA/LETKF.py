@@ -11,10 +11,6 @@ p : int
     Number of observations used in a local analysis step is :code:`2*p+1`
 K : int
     Number of ensembles
-
-H : scipy.sparse.linalg.LinearOperator, (N) -> (L)
-    Observation operator. **Assume Linear**.
-
 """
 
 import numpy as np
@@ -36,8 +32,8 @@ def analysis(H, RG, p, rho=1.0):
         xbG, XbG = ensemble.deviations(xs)
         XbG = XbG.T
         N, k = XbG.shape
-        YbG = H(XbG)
-        yG = yOG - H(xbG)
+        YbG = np.dot(H, XbG)
+        yG = yOG - np.dot(H, xbG)
         obs = observation(yG, YbG, RG, p)
         for n in range(N):
             y, Yb, R = obs(n)
