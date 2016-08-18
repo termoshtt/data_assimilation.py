@@ -136,3 +136,30 @@ def Neff(ws):
 def weight(cs):
     ws = np.exp(-cs)
     return ws / np.sum(ws)
+
+
+def KL_div_hist(xs, ys):
+    """
+    KL-divergence using histogram
+
+    Examples
+    ---------
+    >>> N, K = 3, 10000
+    >>> xs = np.random.random((K, N))
+    >>> D = KL_div_hist(xs, xs)
+    >>> D == 0.0
+    True
+    >>> ys = np.random.random((K, N))
+    >>> D = KL_div_hist(xs, ys)
+    >>> D > 0
+    True
+    """
+    xp, edge = np.histogramdd(xs)
+    yp, _ = np.histogramdd(ys, edge)
+    xp /= np.sum(xp)
+    yp /= np.sum(yp)
+    return sum(
+        x*np.log(x/y)
+        for x, y in zip(xp.flatten(), yp.flatten())
+        if x > 0 and y > 0
+    )
