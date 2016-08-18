@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
+from . import normal
 
 
 def new(N, K):
@@ -163,3 +164,14 @@ def KL_div_hist(xs, ys):
         for x, y in zip(xp.flatten(), yp.flatten())
         if x > 0 and y > 0
     )
+
+
+def non_gaussianity(xs):
+    """
+    KL-divergence from Gaussian approximation using :py:func:`KL_div_hist`
+    """
+    K, _ = xs.shape
+    mu = average(xs)
+    P = covar(xs)
+    ys = normal.gen_ensemble(mu, P, K)
+    return KL_div_hist(xs, ys)

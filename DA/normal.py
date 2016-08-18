@@ -37,6 +37,11 @@ def generator(mu, P, stop=None):
     )
 
 
+def gen_ensemble(mu, P, K):
+    gen = generator(mu, P, K)
+    return np.array(list(gen))  # XXX maybe slow
+
+
 def MonteCarlo(mu, P):
     def eval_mc(f, M):
         rands = generator(mu, P, M)

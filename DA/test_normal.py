@@ -43,8 +43,8 @@ class TestNormal(TestCase):
         D = normal.KL_div(inv(Q), P, xp-xq)
 
         M = 10000
-        xsp = np.array(list(normal.generator(xp, P, M)))
-        xsq = np.array(list(normal.generator(xq, Q, M)))
+        xsp = normal.gen_ensemble(xp, P, M)
+        xsq = normal.gen_ensemble(xq, Q, M)
         D_approx = normal.KL_div_approx(xsq, xsp)
 
         np.testing.assert_allclose(D_approx, D, rtol=10/np.sqrt(M))
