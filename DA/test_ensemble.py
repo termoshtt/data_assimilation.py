@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from . import ensemble
+from . import ensemble, normal
 from unittest import TestCase
 
 
@@ -26,7 +26,8 @@ class TestResampling(TestCase):
         ws = np.array([np.exp(-np.dot(x, x)/2) for x in xs])
         ws /= ws.sum()
         xs = method(ws, xs)
-        np.testing.assert_allclose(ensemble.average(xs), x/2, atol=10/np.sqrt(K))
+        np.testing.assert_allclose(
+                ensemble.average(xs), x/2, atol=10/np.sqrt(K))
         np.testing.assert_allclose(
                 ensemble.covar(xs), np.identity(N)/2, atol=10/np.sqrt(K))
 
@@ -37,3 +38,12 @@ class TestResampling(TestCase):
     def test_merge_resampling_same(self):
         self.same_gaussian(ensemble.merge_resampling)
         self.gaussian(ensemble.merge_resampling)
+
+    def test_gaussian_non_gaussianity(self):
+        N = 2
+        K = 10000
+        mu = np.random.normal(size=N)
+        P = normal.random_covar(N)
+        xs = normal.gen_ensemble(mu, P, K)
+        D = ensemble.non_gaussianity(xs)
+        np.testing.assert_allclose(D, 0.0, atol=K**-0.5)
