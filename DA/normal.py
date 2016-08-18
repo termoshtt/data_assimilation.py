@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-import itertools
+from itertools import islice, count
 from . import ensemble, linalg
 
 
@@ -20,36 +20,26 @@ def random_covar(N):
     return P / P.trace()
 
 
-def pdf(mu, P_inv):
+def generator(mu, P, stop=None):
     """
     Examples
     ---------
-    >>> N = 5
+    >>> N = 3
+    >>> mu = np.random.random(N)
     >>> P = random_covar(N)
-    >>> xp = np.random.normal(size=N)
-    >>> p = pdf(xp, P)
-    >>> px = p(xp+np.random.normal(size=N))
-    >>> isinstance(px, float)
-    True
-    >>> px > 0
+    >>> g = generator(mu, P, 5)
+    >>> len(list(g)) == 5
     True
     """
-    k = len(mu)
-    N = np.sqrt(np.linalg.det(P_inv) / (2*np.pi)**(-k))
-
-    def p(x):
-        return N*np.exp(-linalg.quad(x-mu, P_inv)/2)
-    return p
-
-
-def generator(mu, P):
-    while True:
-        yield np.random.multivariate_normal(mu, P)
+    return (
+        np.random.multivariate_normal(mu, P)
+        for _ in islice(count(), stop)
+    )
 
 
 def MonteCarlo(mu, P):
     def eval_mc(f, M):
-        rands = itertools.islice(generator(mu, P), M)
+        rands = generator(mu, P, M)
         return sum(f(x) for x in rands) / M
     return eval_mc
 
@@ -67,7 +57,7 @@ def KL_div(P_pre_inv, P_post, dx):
     dx : np.array(1d)
         Difference of two centers
     """
-    N = dx.shape
+    N = len(dx)
     QP = np.dot(P_pre_inv, P_post)
     return (
         -np.log(np.linalg.det(QP)) - N

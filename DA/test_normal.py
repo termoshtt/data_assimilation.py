@@ -16,19 +16,19 @@ class TestNormal(TestCase):
         xm = mc(lambda x: x, M)
         np.testing.assert_allclose(xm, xp, atol=10/np.sqrt(M))
 
-    def test_kl_div(self):
+    def test_mc_covar(self):
         N = 2
         M = 10000
         P = normal.random_covar(N)
-        Q = normal.random_covar(N)
         xp = np.zeros(N)
-        xq = np.ones(N)
-        p = normal.pdf(xp, P)
-        q = normal.pdf(xq, Q)
-
         mc = normal.MonteCarlo(xp, P)
-        kl_mc = mc(lambda x: np.log(p(x)/q(x)), M)
-        Qinv = np.linalg.inv(Q)
-        kl = normal.KL_div(Qinv, P, xp-xq)
+        Pm = (M / (M-1)) * mc(lambda x: np.outer(x, x), M)
+        np.testing.assert_allclose(Pm, P, atol=10/np.sqrt(M))
 
-        np.testing.assert_allclose(kl_mc, kl)
+    def test_kl_div_zero(self):
+        N = 11
+        P = normal.random_covar(N)
+        Qinv = np.linalg.inv(P)
+        dx = np.zeros(N)
+        kl = normal.KL_div(Qinv, P, dx)
+        np.testing.assert_allclose(kl, 0.0, atol=1e-13)
