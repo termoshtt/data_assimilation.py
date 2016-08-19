@@ -31,3 +31,28 @@ def symmetric_square_root(A):
     """
     U, S, _ = np.linalg.svd(A)
     return np.dot(U*np.sqrt(S), U.T)
+
+
+def curvature(x_pre, x_now, x_next):
+    """
+    Examples
+    ---------
+    On a line
+    >>> x = np.array([0., 0.])
+    >>> y = np.array([1., 1.])
+    >>> z = np.array([2., 2.])
+    >>> np.testing.assert_allclose(curvature(x, y, z), 0.)
+
+    Unit cycle
+    >>> x = np.array([np.cos(0),   np.sin(0)])
+    >>> y = np.array([np.cos(0.1), np.sin(0.1)])
+    >>> z = np.array([np.cos(0.2), np.sin(0.2)])
+    >>> np.testing.assert_allclose(curvature(x, y, z), 1., rtol=1e-2)
+    """
+    p_n = x_next - x_now
+    p_p = x_now - x_pre
+    pp = p_n - p_p
+    p_mean = (p_n + p_p) / 2
+    p_norm = np.linalg.norm(p_mean)
+    cross = np.sqrt((np.linalg.norm(pp)*p_norm)**2 - np.dot(pp, p_mean)**2)
+    return cross / (p_norm**3)
