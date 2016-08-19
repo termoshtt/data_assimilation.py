@@ -34,6 +34,15 @@ class TestNormal(TestCase):
         kl = normal.KL_div(Qinv, P, dx)
         np.testing.assert_allclose(kl, 0.0, atol=1e-13)
 
+    def test_kl_div_exact(self):
+        N = 3
+        xp = np.zeros(N)
+        P = np.identity(N)
+        xq = np.ones(N)
+        Q = np.identity(N)
+        D = normal.KL_div(inv(Q), P, xp-xq)
+        np.testing.assert_allclose(D, 0.5*N)
+
     def test_kl_div_approx(self):
         N = 2
         xp = np.random.normal(size=N)

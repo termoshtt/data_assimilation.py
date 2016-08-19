@@ -39,6 +39,31 @@ class TestResampling(TestCase):
         self.same_gaussian(ensemble.merge_resampling)
         self.gaussian(ensemble.merge_resampling)
 
+    def test_kl_div_hist_exact(self):
+        N = 2
+        K = 10000
+        xp = np.zeros(N)
+        P = np.identity(N)
+        xsp = normal.gen_ensemble(xp, P, K)
+        xq = np.ones(N)
+        Q = np.identity(N)
+        xsq = normal.gen_ensemble(xq, Q, K)
+        D_hist = ensemble.KL_div_hist(xsp, xsq)
+        np.testing.assert_allclose(D_hist, 0.5*N, rtol=0.5)
+
+    def test_kl_div_hist_random(self):
+        N = 2
+        K = 100000
+        xp = np.random.normal(size=N)
+        P = normal.random_covar(N)
+        xsp = normal.gen_ensemble(xp, P, K)
+        xq = np.random.normal(size=N)
+        Q = normal.random_covar(N)
+        xsq = normal.gen_ensemble(xq, Q, K)
+        D_hist = ensemble.KL_div_hist(xsp, xsq)
+        D = normal.KL_div(P, Q, xp-xq)
+        np.testing.assert_allclose(D_hist, D, rtol=0.5)
+
     def test_gaussian_non_gaussianity(self):
         N = 2
         K = 10000
