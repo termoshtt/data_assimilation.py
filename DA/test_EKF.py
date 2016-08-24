@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
+from numpy.linalg import inv
 from unittest import TestCase
 
-from . import EKF
-from .linalg import dot3
+from . import EKF, normal
+from .linalg import bracket
 
 
 class TestEKF(TestCase):
@@ -14,19 +15,28 @@ class TestEKF(TestCase):
         A = np.random.random((N, N))
         U = lambda x: np.dot(A, x)  # linear dynamics
         F = EKF.forcast(U)
-        P = np.random.random((N, N))
-        P = np.dot(P.T, P)
+        P = normal.random_covar(N)
         x = np.random.random(N)
         _, Pn = F(x, P)
-        np.testing.assert_allclose(Pn, dot3(A, P, A.T))
+        np.testing.assert_allclose(Pn, bracket(P, A.T), rtol=1e-6)
 
-    def assimilation(self, A, obs):
-        x = self.init.copy()
-        xm = self.init.copy()
-        P = np.identity(self.N)
-        T_transit = self.T // 10
-        F = EKF.forcast(self.U)
-        for t in range(self.T + T_transit):
-            x = self.U(x)
-            xm, P = F(xm, P)
-            xm, P = A(xm, P)
+    def test_riccati(self):
+        N = 10
+        R = normal.random_covar(N)
+        H = np.random.random((N, N))
+        Omg = bracket(inv(R), H)
+        a = np.random.random((N, N))
+        U = lambda x: np.dot(a, x)  # linear dynamics
+        F = EKF.forcast(U)
+        A = EKF.analysis(H, R)
+
+        x = np.random.random(N)
+        P = normal.random_covar(N)
+        J = inv(P)
+        Jr = bracket(J+Omg, inv(a))
+
+        x, P = A(x, P, x)
+        x, P = F(x, P)
+        Jn = inv(P)
+
+        np.testing.assert_allclose(Jn, Jr, rtol=1e-4)
