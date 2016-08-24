@@ -11,7 +11,28 @@ def quad(r, A):
 
 
 def dot3(A, B, C):
-    return np.dot(A, np.dot(B, C))
+    return np.einsum("ij,jk,kl->il", A, B, C)
+
+
+def bracket(A, B):
+    """
+
+    Examples
+    ---------
+    >>> N = 5
+    >>> A = np.random.random((N, N))
+    >>> B = np.random.random((N, N))
+    >>> C = np.random.random((N, N))
+    >>> np.allclose(bracket(A+B, C), bracket(A, C) + bracket(B, C))
+    True
+    >>> np.allclose(bracket(bracket(A, B), C), bracket(A, np.dot(B, C)))
+    True
+    """
+    return dot3(B.T, A, B)
+
+
+def bracket_diag(A, D):
+    return np.einsum("i,ij,j->ij", D, A, D)
 
 
 def symmetric_square_root(A):
