@@ -13,20 +13,22 @@ class TestEKF(TestCase):
     def test_forcast(self):
         N = 10
         A = np.random.random((N, N))
-        U = lambda x: np.dot(A, x)  # linear dynamics
+
+        def U(x): return np.dot(A, x)  # linear dynamics
         F = EKF.forcast(U)
         P = normal.random_covar(N)
         x = np.random.random(N)
         _, Pn = F(x, P)
-        np.testing.assert_allclose(Pn, bracket(P, A.T), rtol=1e-6)
+        np.testing.assert_allclose(Pn, bracket(P, A.T), rtol=5e-6)
 
     def test_riccati(self):
-        N = 10
+        N = 5
         R = normal.random_covar(N)
-        H = np.random.random((N, N))
+        H = np.random.normal(size=(N, N))
         Omg = bracket(inv(R), H)
-        a = np.random.random((N, N))
-        U = lambda x: np.dot(a, x)  # linear dynamics
+        a = np.identity(N) + 0.001*np.random.normal(size=(N, N))
+
+        def U(x): return np.dot(a, x)  # linear dynamics
         F = EKF.forcast(U)
         A = EKF.analysis(H, R)
 
@@ -35,8 +37,8 @@ class TestEKF(TestCase):
         J = inv(P)
         Jr = bracket(J+Omg, inv(a))
 
-        x, P = A(x, P, x)
+        x, P = A(x, P, np.dot(H, x))
         x, P = F(x, P)
         Jn = inv(P)
 
-        np.testing.assert_allclose(Jn, Jr, rtol=1e-4)
+        np.testing.assert_allclose(Jn, Jr, 1e-5)
