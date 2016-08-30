@@ -22,6 +22,11 @@ def Jacobi(F, x, alpha=1e-7):
     return D
 
 
+def bracket_Jacobi(P, J):
+    A = J(P).T
+    return J(A).T
+
+
 def scaled(C):
     """ scale rows
 
