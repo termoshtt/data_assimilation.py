@@ -94,6 +94,16 @@ def CLV(U, x0, T, T_pre=None, T_post=None):
         Initial point
     T : Int
         length of timeline
+
+    Returns
+    --------
+    timeline : [dict]
+        dict includes following keys
+
+        - x : state vector
+        - V : CLV
+        - D : inverse of local growth rate of CLVs
+
     """
     if T_pre is None:
         T_pre = T // 2
