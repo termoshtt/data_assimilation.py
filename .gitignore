@@ -65,3 +65,4 @@ target/
 
 # generated figures
 *.png
+*.pdf
