@@ -10,9 +10,7 @@ from . import lyapunov, Kalman
 def forcast(U):
     def f(x, P):
         J = lyapunov.Jacobi(U, x)
-        A = J(P).T
-        P = J(A).T
-        return U(x), P
+        return U(x), lyapunov.bracket_Jacobi(P, J)
     return f
 
 
