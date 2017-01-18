@@ -15,6 +15,13 @@ def Lorenz63(p, r, b):
     return f
 
 
+def osillator(w):
+    A = np.array([[0, 1], [-w*w, 0]])
+
+    def f(x):
+        return np.dot(A, x)
+
+
 def RK4(f, dt, T=1):
     def teo(x):
         k1 = dt*f(x)
