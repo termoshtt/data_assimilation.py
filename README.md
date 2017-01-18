@@ -6,3 +6,7 @@ Algorithms
 
 - ETKF based on [Hunt et al. Physica D(2007)]
 - LETKF based on [Hunt et al. Physica D(2007)]
+
+License
+--------
+GPLv3 (See LICENSE file)
