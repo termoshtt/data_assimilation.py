@@ -10,4 +10,6 @@ __all__ = [op.basename(f)[:-3]
            if op.basename(f) != "__init__.py"
            if not op.basename(f).startswith("test_")]
 
-_mods = [import_module("DA." + m) for m in __all__]
+for m in __all__:
+    import_module("DA." + m) 
+# _mods = [import_module("DA." + m) for m in __all__]

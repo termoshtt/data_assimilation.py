@@ -1,9 +1,25 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
+import pandas as pd
 from .model import RK4, Lorenz96, Lorenz63
 from . import ensemble
 from unittest import TestCase
+
+
+def generate_l63_timeseries(dt, T, x0):
+    U = RK4(Lorenz63(p=10., r=28., b=8./3.), dt=dt)
+
+    def iterate(x, T):
+        for t in range(T):
+            yield dt*t, x
+            x = U(x)
+
+    return pd.DataFrame(
+        [(t, x[0], x[1], x[2]) for (t, x) in
+         iterate(np.array([1.0, 0, 0]), 10000)],
+        columns=["time", "X", "Y", "Z"]
+    ).set_index("time")
 
 
 class _TestEnsembleDA(TestCase):
